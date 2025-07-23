@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FaceTruth</title>
+    <link rel="icon" type="image/png" href="{{ url_for('static', filename='images.png') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            background-color: #f4f4f4;
+            scroll-behavior: smooth;
+        }
+        .nav {
+            background-color: #064185;
+            padding: 15px 0;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        .nav ul {
+            list-style: none;
+            margin: 0;
+            padding: 0;
+            text-align: center;
+        }
+        .nav ul li {
+            display: inline;
+            margin: 0 20px;
+        }
+        .nav ul li a {
+            color: white;
+            text-decoration: none;
+            font-size: 18px;
+        }
+        .nav ul li a:hover {
+            text-decoration: underline;
+        }
+        .App {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 50px 20px;
+            background: url('https://www.bioid.com/wp-content/uploads/Deep-fake-detection-AI.webp') no-repeat center/cover;
+            color: white;
+            min-height: 500px;
+        }
+        .content {
+            text-align: center;
+            max-width: 600px;
+            background: rgba(0, 0, 0, 0.7);
+            padding: 30px;
+            border-radius: 8px;
+        }
+        .heading {
+            font-size: 48px;
+            margin-bottom: 20px;
+        }
+        .para {
+            font-size: 18px;
+            line-height: 1.6;
+        }
+        .upload-box {
+            background-color: white;
+            display: inline-block;
+            padding: 30px;
+            border-radius: 8px;
+            width: 500px;
+            max-width: 90%;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            margin: 30px auto;
+            text-align: center;
+        }
+        .upload-box label {
+            display: block;
+            margin-bottom: 10px;
+            font-weight: bold;
+        }
+        .upload-box input[type="file"] {
+            margin: 15px 0;
+            width: 90%;
+            padding: 5px;
+            border: 2px solid rgba(0, 0, 0, 0.1);
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .upload-box input[type="file"]:hover {
+            border-color: #007bff;
+            background-color: #f0f8ff;
+        }
+        .upload-box button {
+            background-color: #007bff;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            margin: 5px;
+        }
+        .upload-box button:hover {
+            background-color: #0056b3;
+        }
+        .upload-box button:disabled {
+            background-color: #cccccc;
+            cursor: not-allowed;
+        }
+        .spinner {
+            margin-top: 20px;
+            display: none;
+        }
+        .result {
+            margin-top: 20px;
+            font-size: 18px;
+        }
+        #imagePreview {
+            display: none;
+            margin-top: 15px;
+            max-width: 100%;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+        .instructions {
+            font-size: 12px;
+            color: #666;
+            margin: 10px 0;
+        }
+        .about-section {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 50px 20px;
+            background-color: #fff;
+        }
+        .about-text {
+            max-width: 500px;
+            margin-right: 40px;
+        }
+        .about-image img {
+            max-width: 400px;
+            border-radius: 8px;
+        }
+        .abc {
+            padding: 50px 20px;
+            background-color: #f4f4f4;
+            text-align: center;
+        }
+        .content-wrapper {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            max-width: 1200px;
+            margin: 0 auto;
+            gap: 40px;
+        }
+        .text-section {
+            max-width: 500px;
+            text-align: left;
+        }
+        .video-container {
+            max-width: 500px;
+            height: 300px;
+        }
+        .contact-section {
+            padding: 50px 20px;
+            background-color: #f2f3f5;
+            color: white;
+            text-align: center;
+        }
+        .contact-form {
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        .contact-form input, .contact-form textarea {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            border: none;
+            border-radius: 4px;
+        }
+        .contact-form button {
+            background-color: #fff;
+            color: #fafcfd;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .contact-form button:hover {
+            background-color: #e0e0e0;
+        }
+        .footer {
+            background-color: #333;
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+        @media (max-width: 768px) {
+            .App, .about-section, .content-wrapper {
+                flex-direction: column;
+                text-align: center;
+            }
+            .about-text, .text-section, .video-container {
+                margin: 20px 0;
+            }
+            .nav ul li {
+                margin: 0 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <nav class="nav">
+        <ul>
+            <li><a href="#home">Home</a></li>
+            <li><a href="#about-section">About</a></li>
+            <li><a href="#upload-section">Upload</a></li>
+            <li><a href="#contact-section">Contact</a></li>
+        </ul>
+    </nav>
+
+    <section id="home">
+        <div class="App">
+            <div class="content">
+                <h2 class="heading">FaceTruth</h2>
+                <p class="para">Upload an image to analyze whether it has been altered using deepfake technology. Our AI-powered system scans for inconsistencies and provides accurate results to ensure transparency and trust in digital content.</p>
+            </div>
+        </div>
+    </section>
+
+    <section id="about-section" class="new-section">
+        <div class="about-section">
+            <div class="about-text">
+                <h1>About Us 🚀</h1>
+                <h2>FaceTruth: A Deep Fake Detection System</h2>
+                <p>FaceTruth is an advanced AI-powered system designed to detect deep fake content with high accuracy. Our model analyzes facial features and artifacts to differentiate real and synthetic images effectively.</p>
+                <p>✅ AI-driven deep fake detection</p>
+                <p>✅ Advanced facial analysis</p>
+                <p>✅ Secure & reliable verification</p>
+                <p>✅ 24/7 monitoring and support</p>
+            </div>
+            <div class="about-image">
+                <img src="{{ url_for('static', filename='about.png') }}" alt="Illustration of deepfake detection technology">
+            </div>
+        </div>
+    </section>
+
+    <section id="upload-section" class="abc">
+        <div class="container">
+            <h1>Explore FaceTruth</h1>
+            <p class="subtitle">Discover the power of AI in detecting deepfakes. Our system analyzes images to ensure authenticity.</p>
+            
+            <div class="upload-box">
+                <h2 style="color: black;">Upload Image</h2>
+                <label for="imageInput" style="color: black;">Select an image to analyze</label>
+
+                <input type="file" name="file" id="imageInput" accept="image/jpeg,image/png" onchange="previewImage(event)" required>
+                <p class="instructions">Supported formats: JPEG, PNG and jpg. Max size: 10MB.</p>
+                <img id="imagePreview" alt="Image Preview" />
+                <div>
+                    <button type="button" onclick="submitImage()">Detect Deepfake</button>
+                    <button type="button" onclick="clearImage()">Clear</button>
+                </div>
+                <div class="spinner" id="imageSpinner">
+                    <img src="{{ url_for('static', filename='spinner1.gif') }}" alt="Loading..." style="width: 40px;">
+                </div>
+                <div class="result" id="detectionResult"></div>
+            </div>
+        </div>
+    </section>
+
+    <section id="contact-section" class="contact-section">
+        <div class="contact-form">
+            <h2>Contact Us</h2>
+            <p>We'd love to help you along your automation journey.</p>
+            <form action="{{ url_for('contact') }}" method="POST" onsubmit="return validateContactForm()">
+                <label for="first-name">First Name</label>
+                <input type="text" id="first-name" name="first-name" required aria-required="true">
+                <label for="last-name">Last Name</label>
+                <input type="text" id="last-name" name="last-name" required aria-required="true">
+                <label for="email">E-mail</label>
+                <input type="email" id="email" name="email" required aria-required="true">
+                <label for="phone">Phone</label>
+                <input type="tel" id="phone" name="phone">
+                <label for="company">Company</label>
+                <input type="text" id="company" name="company" required aria-required="true">
+                <label for="message">Add your question or describe your interest</label>
+                <textarea id="message" name="message" rows="4"></textarea>
+                <button type="submit">Submit</button>
+            </form>
+        </div>
+    </section>
+
+    <div class="footer">
+        <div class="contact-info">
+            <p>Thank you for visiting!</p>
+            <p>Get in Touch!</p>
+            <p>© 2025 FaceTruth. All Rights Reserved.</p>
+            <h2>Contact Us</h2>
+            <p><strong>Email:</strong> Facetruth@gmail.com</p>
+            <p><strong>Phone:</strong> +91 6273868656</p>
+            <p><strong>Address:</strong> VIT Bhopal, Sehore, Madhya Pradesh</p>
+        </div>
+    </div>
+
+    <script>
+        let currentImageUrl = null;
+
+        function previewImage(event) {
+            const imageInput = document.getElementById('imageInput');
+            const imagePreview = document.getElementById('imagePreview');
+            const file = imageInput.files[0];
+            if (file) {
+                if (currentImageUrl) {
+                    URL.revokeObjectURL(currentImageUrl);
+                }
+                currentImageUrl = URL.createObjectURL(file);
+                imagePreview.src = currentImageUrl;
+                imagePreview.alt = `Preview of uploaded image: ${file.name}`;
+                imagePreview.style.display = 'block';
+            }
+        }
+
+        function clearImage() {
+            const imageInput = document.getElementById('imageInput');
+            const imagePreview = document.getElementById('imagePreview');
+            const detectionResult = document.getElementById('detectionResult');
+            imageInput.value = '';
+            imagePreview.src = '';
+            imagePreview.alt = 'Image Preview';
+            imagePreview.style.display = 'none';
+            detectionResult.innerHTML = '';
+            if (currentImageUrl) {
+                URL.revokeObjectURL(currentImageUrl);
+                currentImageUrl = null;
+            }
+        }
+
+        function submitImage() {
+            const imageInput = document.getElementById('imageInput');
+            const imageSpinner = document.getElementById('imageSpinner');
+            const detectionResult = document.getElementById('detectionResult');
+            const submitButton = document.querySelector('button[onclick="submitImage()"]');
+            const file = imageInput.files[0];
+
+            if (!file) {
+                alert('Please upload an image file.');
+                return;
+            }
+
+            const validTypes = ['image/jpeg', 'image/png'];
+            if (!validTypes.includes(file.type)) {
+                alert('Please upload a JPEG or PNG image.');
+                return;
+            }
+
+            if (file.size > 10 * 1024 * 1024) {
+                alert('File size exceeds 10MB.');
+                return;
+            }
+
+            submitButton.disabled = true;
+            imageSpinner.style.display = 'block';
+            detectionResult.innerHTML = '';
+
+            const formData = new FormData();
+            formData.append('file', file);
+
+            fetch('/predict', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(`HTTP error! Status: ${response.status}`);
+                }
+                return response.json();
+            })
+            .then(data => {
+                const resultText = data.prediction.toLowerCase() === 'deepfake'
+                ? `This image is likely a Deepfake .`
+                : `This image appears Authentic .`;
+                detectionResult.innerHTML = resultText;
+                detectionResult.style.color = data.prediction.toLowerCase() === 'deepfake' ? 'red' : 'green';
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                let errorMessage = 'An error occurred while processing the image.';
+                if (error.message.includes('Failed to fetch')) {
+                    errorMessage = 'Unable to connect to the server. Please check your internet connection.';
+                }
+                detectionResult.innerHTML = errorMessage;
+                detectionResult.style.color = 'red';
+            })
+            .finally(() => {
+                imageSpinner.style.display = 'none';
+                submitButton.disabled = false;
+            });
+        }
+
+        function validateContactForm() {
+            const email = document.getElementById('email').value;
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!emailRegex.test(email)) {
+                alert('Please enter a valid email address.');
+                return false;
+            }
+            return true;
+        }
+
+        // Smooth scrolling for anchor links
+        document.querySelectorAll('.nav a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function(e) {
+                e.preventDefault();
+                document.querySelector(this.getAttribute('href')).scrollIntoView({
+                    behavior: 'smooth'
+                });
+            });
+        });
+    </script>
+</body>
+</html>

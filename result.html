@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Prediction Result - FaceTruth</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='project.css') }}"> <!-- Remove if merging -->
+</head>
+<body class="background1">
+    <div class="App">
+        <nav class="nav">
+            <ul>
+                <li><a href="{{ url_for('index') }}">Home</a></li>
+                <li><a href="#about">About</a></li>
+                <li><a href="#explore">Explore</a></li>
+                <li><a href="#contact">Contact</a></li>
+            </ul>
+        </nav>
+        <div class="content">
+            <h1 class="heading">Prediction Result</h1>
+            <div class="para">
+                {% if error %}
+                    <p style="color: red;">Error: {{ error }}</p>
+                {% else %}
+                    <p>Prediction: {{ prediction | tojson }}</p>
+                    <p>Interpretation:
+                        {% if prediction[0][0] > 0.5 %}
+                            The uploaded file is likely a <strong>deep fake</strong>.
+                        {% else %}
+                            The uploaded file is likely <strong>authentic</strong>.
+                        {% endif %}
+                    </p>
+                {% endif %}
+                <a href="{{ url_for('index') }}" class="button">Back to Home</a>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
