@@ -1,4 +1,4 @@
-#FaceTruth-Deepfake Detection System for Images:
+# FaceTruth-Deepfake Detection System for Images:
 
 
 
